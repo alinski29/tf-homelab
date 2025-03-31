@@ -82,20 +82,14 @@ variable "transmission_password" {
   # Provide via environment variable TF_VAR_transmission_password
 }
 
-# variable "openai_api_key" {
-#   description = "OpenAI API Key for Open WebUI."
-#   type        = string
-#   sensitive   = true
-#   # Provide via environment variable TF_VAR_openai_api_key
-# }
-
-variable "ollama_docker_tag" {
-  description = "Docker tag for the Ollama image."
+variable "openai_api_key" {
+  description = "OpenAI API Key for Open WebUI."
   type        = string
-  default     = "latest"
+  sensitive   = true
+  # Provide via environment variable TF_VAR_openai_api_key
 }
 
-variable "open_webui_port" {
+variable "openwebui_port" {
   description = "Port to expose Open WebUI on the host."
   type        = number
   default     = 3000

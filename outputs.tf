@@ -58,3 +58,27 @@ output "kestra_postgres_container_started" {
 output "kestra_postgres_container_exit_code" {
   value = docker_container.kestra_postgres.exit_code
 }
+
+output "ollama_container_id" {
+  value = docker_container.ollama.id
+}
+
+output "ollama_container_started" {
+  value = docker_container.ollama.start
+}
+
+output "ollama_container_exit_code" {
+  value = docker_container.ollama.exit_code
+}
+
+output "openwebui_container_id" {
+  value = docker_container.openwebui.id
+}
+
+output "openwebui_container_started" {
+  value = docker_container.openwebui.start
+}
+
+output "openwebui_container_exit_code" {
+  value = docker_container.openwebui.exit_code
+}
