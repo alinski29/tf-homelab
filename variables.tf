@@ -1,8 +1,7 @@
 variable "docker_volumes_home" {
   description = "Base path for Docker volumes on the target host."
   type        = string
-  # Default value taken from secrets.env, can be overridden
-  default = "~/.local/share/docker/volumes"
+  default     = "~/.local/share/docker/volumes"
 }
 
 variable "pi_home" {
