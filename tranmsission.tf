@@ -6,10 +6,11 @@ resource "docker_image" "transmission" {
 }
 
 resource "docker_container" "transmission" {
-  provider = docker.rpi
-  name     = "transmission"
-  image    = docker_image.transmission.image_id
-  restart  = "unless-stopped"
+  provider     = docker.rpi
+  name         = "transmission"
+  image        = docker_image.transmission.image_id
+  network_mode = "bridge"
+  restart      = "unless-stopped"
 
   env = [
     "PUID=${var.puid}",
