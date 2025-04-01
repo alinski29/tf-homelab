@@ -65,6 +65,8 @@ resource "docker_container" "openwebui" {
     "ENABLE_OLLAMA_API=true",
     "OLLAMA_BASE_URL=http://${docker_container.ollama.hostname}:11434",
     "ENABLE_OPENAI_API=true",
-    "OPENAI_API_KEY=${var.openai_api_key}"
+    "OPENAI_API_KEY=${var.openai_api_key}",
+    "ANTHROPIC_API_KEY=${var.anthropic_api_key}",
+    "GOOGLE_API_KEY=${var.google_api_key}"
   ]
 }

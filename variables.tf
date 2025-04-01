@@ -94,3 +94,19 @@ variable "openwebui_port" {
   type        = number
   default     = 3000
 }
+
+
+variable "anthropic_api_key" {
+  description = "Anthropic API Key for Open WebUI."
+  type        = string
+  sensitive   = true
+  # Provide via environment variable TF_VAR_anthropic_api_key
+}
+
+
+variable "google_api_key" {
+  description = "Google API Key for Open WebUI."
+  type        = string
+  sensitive   = true
+  # Provide via environment variable TF_VAR_google_api_key
+}

@@ -22,6 +22,8 @@ This project contains Terraform configurations to deploy various Docker services
    export TF_VAR_transmission_username="<your_transmission_username>"
    export TF_VAR_transmission_password="<your_transmission_password>"
    export TF_VAR_openai_api_key="<your_openai_api_key>"
+   export TF_VAR_google_api_key="<your_google_api_key>"
+   export TF_VAR_anthropic_api_key"<your_anthropic_api_key>"
    ```
 
 ## Setup Instructions
