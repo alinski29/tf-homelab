@@ -11,9 +11,11 @@ resource "docker_container" "pihole" {
   name         = "pihole"
   image        = docker_image.pihole_arm64.image_id
   network_mode = "bridge"
+  hostname     = "pihole"
   restart      = "unless-stopped"
-
-  dns = ["127.0.0.1", "1.1.1.1"]
+  networks_advanced {
+    name = docker_network.homelab.name
+  }
 
   # Capabilities needed by Pi-hole
   capabilities {
@@ -22,7 +24,9 @@ resource "docker_container" "pihole" {
 
   env = [
     "TZ=${var.timezone}",
-    "WEBPASSWORD=${var.pihole_webpassword}"
+    "WEBPASSWORD=${var.pihole_webpassword}",
+    "FTLCONF_webserver_api_password=${var.pihole_webpassword}",
+    "FTLCONF_dns_listeningMode=all"
   ]
 
   ports {
@@ -42,14 +46,14 @@ resource "docker_container" "pihole" {
   }
   ports {
     internal = 80
-    external = 80
+    external = 8880
     protocol = "tcp"
   }
-  ports {
-    internal = 443
-    external = 443
-    protocol = "tcp"
-  }
+  # ports {
+  #   internal = 443
+  #   external = 8443
+  #   protocol = "tcp"
+  # }
 
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/pihole/etc-pihole"
@@ -60,5 +64,22 @@ resource "docker_container" "pihole" {
     host_path      = "${local.pi_docker_volumes_home}/pihole/etc-dnsmasq.d"
     container_path = "/etc/dnsmasq.d"
     read_only      = false
+  }
+
+  labels {
+    label = "traefik.enable"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.pihole.rule"
+    value = "Host(`pihole.home.lan`)"
+  }
+  labels {
+    label = "traefik.http.routers.pihole.entrypoints"
+    value = "web"
+  }
+  labels {
+    label = "traefik.http.services.pihole.loadbalancer.server.port"
+    value = "80"
   }
 }
