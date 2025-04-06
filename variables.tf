@@ -67,21 +67,6 @@ variable "yahoofinance_token" {
   # No default, should be provided via environment variable TF_VAR_yahoofinance_token
 }
 
-variable "transmission_username" {
-  description = "Username for Transmission web interface (optional)."
-  type        = string
-  default     = null
-  sensitive   = true
-  # Provide via environment variable TF_VAR_transmission_username
-}
-
-variable "transmission_password" {
-  description = "Password for Transmission web interface."
-  type        = string
-  sensitive   = true
-  # Provide via environment variable TF_VAR_transmission_password
-}
-
 variable "openai_api_key" {
   description = "OpenAI API Key for Open WebUI."
   type        = string
@@ -109,4 +94,11 @@ variable "google_api_key" {
   type        = string
   sensitive   = true
   # Provide via environment variable TF_VAR_google_api_key
+}
+
+variable "letsencrypt_email" {
+  description = "Email address for Let's Encrypt registration."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_letsencrypt_email
 }
