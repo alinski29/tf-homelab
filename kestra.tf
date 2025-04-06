@@ -74,7 +74,6 @@ resource "docker_container" "kestra_postgres" {
     name = docker_network.kestra.name
   }
   restart = "unless-stopped"
-
   env = [
     "POSTGRES_DB=kestra",
     "POSTGRES_USER=${var.kestra_db_username}",
@@ -87,7 +86,7 @@ resource "docker_container" "kestra_postgres" {
   }
 
   healthcheck {
-    test     = ["CMD-SHELL", "pg_isready -d kestra -U kestra"]
+    test     = ["CMD-SHELL", "pg_isready -d kestra -U ${var.kestra_db_username}"]
     interval = "30s"
     timeout  = "10s"
     retries  = 10
@@ -114,11 +113,11 @@ resource "null_resource" "kestra_config_upload" {
       db_username = var.kestra_db_username
       db_password = var.kestra_db_password
       db_hostname = "kestra-postgres"
+      db_port     = "5432"
     })
     destination = "${var.pi_home}/.config/kestra-config.yml"
   }
 }
-
 
 resource "docker_container" "kestra" {
   depends_on = [
@@ -128,11 +127,19 @@ resource "docker_container" "kestra" {
   provider     = docker.rpi
   name         = "kestra"
   image        = docker_image.kestra.image_id
-  network_mode = "bridge"
+  hostname     = "kestra"
+  network_mode = "bridge" # Removed bridge mode to use specific networks
+  restart      = "unless-stopped"
   networks_advanced {
-    name = docker_network.kestra.name
+    name = docker_network.kestra.name # Keep existing kestra network
   }
-  restart = "unless-stopped"
+  networks_advanced {
+    name = docker_network.homelab.name # Add homelab network
+  }
+  ports {
+    internal = 8080
+    external = 8080
+  }
 
   entrypoint = ["/bin/bash"]
   command    = ["-c", "/app/kestra server standalone --worker-thread=128 -c /etc/config/config.yaml"]
@@ -160,13 +167,26 @@ resource "docker_container" "kestra" {
     read_only      = true
   }
 
-  ports {
-    internal = 8080
-    external = 8080
+  # Removed ports section as Traefik will handle exposure
+  labels {
+    label = "traefik.enable"
+    value = "true"
   }
-  ports {
-    internal = 8081
-    external = 8081
+  labels {
+    label = "traefik.http.routers.kestra.service"
+    value = "kestra"
+  }
+  labels {
+    label = "traefik.http.routers.kestra.rule"
+    value = "Host(`kestra.home.lan`)"
+  }
+  labels {
+    label = "traefik.http.routers.kestra.entrypoints"
+    value = "web"
+  }
+  labels {
+    label = "traefik.http.services.kestra.loadbalancer.server.port"
+    value = "8080"
   }
 
 }
