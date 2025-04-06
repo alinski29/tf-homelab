@@ -1,6 +1,6 @@
 datasources:
   postgres:
-    url: jdbc:postgresql://${db_hostname}:5432/kestra
+    url: jdbc:postgresql://${db_hostname}:${db_port}/kestra
     driverClassName: org.postgresql.Driver
     username: ${db_username}
     password: ${db_password}
