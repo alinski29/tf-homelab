@@ -61,16 +61,28 @@ resource "docker_container" "qbittorrent" {
     value = "true"
   }
   labels {
-    label = "traefik.http.routers.qbittorrent.rule"
-    value = "Host(`torrents.home.lan`)"
+    label = "traefik.http.routers.qbittorrent.tls"
+    value = "true"
   }
   labels {
     label = "traefik.http.routers.qbittorrent.entrypoints"
-    value = "web"
+    value = "websecure"
   }
   labels {
-    label = "traefik.http.services.qbittorrent.loadbalancer.server.scheme"
-    value = "http"
+    label = "traefik.http.routers.qbittorrent.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.qbittorrent.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.qbittorrent.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.qbittorrent.rule"
+    value = "Host(`torrents.${var.cert_domain}`)"
   }
   labels {
     label = "traefik.http.services.qbittorrent.loadbalancer.server.port"

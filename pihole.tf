@@ -71,12 +71,28 @@ resource "docker_container" "pihole" {
     value = "true"
   }
   labels {
-    label = "traefik.http.routers.pihole.rule"
-    value = "Host(`pihole.home.lan`)"
+    label = "traefik.http.routers.pihole.tls"
+    value = "true"
   }
   labels {
     label = "traefik.http.routers.pihole.entrypoints"
-    value = "web"
+    value = "websecure"
+  }
+  labels {
+    label = "traefik.http.routers.pihole.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.pihole.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.pihole.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.pihole.rule"
+    value = "Host(`pihole.${var.cert_domain}`)"
   }
   labels {
     label = "traefik.http.services.pihole.loadbalancer.server.port"

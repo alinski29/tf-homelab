@@ -104,7 +104,7 @@ resource "null_resource" "kestra_config_upload" {
   connection {
     type        = "ssh"
     user        = "pi"
-    host        = "192.168.0.250"
+    host        = var.pi_ip_address
     private_key = file("${var.local_home}/.ssh/id_rsa")
   }
 
@@ -167,26 +167,37 @@ resource "docker_container" "kestra" {
     read_only      = true
   }
 
-  # Removed ports section as Traefik will handle exposure
   labels {
     label = "traefik.enable"
     value = "true"
   }
   labels {
-    label = "traefik.http.routers.kestra.service"
-    value = "kestra"
-  }
-  labels {
-    label = "traefik.http.routers.kestra.rule"
-    value = "Host(`kestra.home.lan`)"
+    label = "traefik.http.routers.kestra.tls"
+    value = "true"
   }
   labels {
     label = "traefik.http.routers.kestra.entrypoints"
-    value = "web"
+    value = "websecure"
+  }
+  labels {
+    label = "traefik.http.routers.kestra.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.kestra.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.kestra.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.kestra.rule"
+    value = "Host(`kestra.${var.cert_domain}`)"
+    # value = "Host(`kestra.zendata.duckdns.org`) || (Host(`zendata.duckdns.org`) && Path(`/kestra`))"
   }
   labels {
     label = "traefik.http.services.kestra.loadbalancer.server.port"
     value = "8080"
   }
-
 }

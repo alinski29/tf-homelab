@@ -10,6 +10,18 @@ variable "pi_home" {
   default     = "/home/pi"
 }
 
+variable "pi_ip_address" {
+  description = "IP address of the Raspberry Pi server."
+  type        = string
+  default     = "192.168.0.250"
+}
+
+variable "cert_domain" {
+  description = "Domain name for the certificate."
+  type        = string
+  default     = "zendata.duckdns.org"
+}
+
 variable "local_home" {
   description = "Path to home directory for Raspery Pi server"
   type        = string
@@ -96,9 +108,23 @@ variable "google_api_key" {
   # Provide via environment variable TF_VAR_google_api_key
 }
 
-variable "letsencrypt_email" {
-  description = "Email address for Let's Encrypt registration."
+# variable "cloudflare_email" {
+#   description = "Email address for Cloudflare API."
+#   type        = string
+#   sensitive   = true
+#   # No default, should be provided via environment variable TF_VAR_cloudflare_email
+# }
+
+# variable "cloudflare_api_token" {
+#   description = "API key for Cloudflare."
+#   type        = string
+#   sensitive   = true
+#   # No default, should be provided via environment variable TF_VAR_cloudflare_api_key
+# }
+
+variable "duckdns_api_token" {
+  description = "API token for DuckDNS."
   type        = string
   sensitive   = true
-  # No default, should be provided via environment variable TF_VAR_letsencrypt_email
+  # No default, should be provided via environment variable TF_VAR_duckdns_api_token
 }

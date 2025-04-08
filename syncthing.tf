@@ -59,6 +59,9 @@ resource "docker_container" "syncthing_pi" {
   hostname     = "syncthing"
   restart      = "unless-stopped"
   network_mode = "bridge"
+  networks_advanced {
+    name = docker_network.homelab.name
+  }
 
   env = [
     "PUID=${var.puid}",
@@ -88,4 +91,38 @@ resource "docker_container" "syncthing_pi" {
     host_path      = var.pi_home
     container_path = var.pi_home
   }
+
+  labels {
+    label = "traefik.enable"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.tls"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.entrypoints"
+    value = "websecure"
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.syncthing-pi.rule"
+    value = "Host(`syncthing-pi.${var.cert_domain}`)"
+  }
+  labels {
+    label = "traefik.http.services.syncthing-pi.loadbalancer.server.port"
+    value = "8384"
+  }
+
 }

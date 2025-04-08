@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/null"
       version = "~> 3.2"
     }
+    # cloudflare = {
+    #   source  = "cloudflare/cloudflare"
+    #   version = "~> 5.2"
+    # }
   }
 }
 
@@ -17,5 +21,5 @@ provider "docker" {
 
 provider "docker" {
   alias = "rpi"
-  host  = "tcp://192.168.0.250:2375"
+  host  = "tcp://${var.pi_ip_address}:2375"
 }

@@ -42,6 +42,11 @@ resource "docker_container" "jellyfin" {
   ]
 
   volumes {
+    host_path      = "${local.pi_docker_volumes_home}/jellyfin/config"
+    container_path = "/config"
+  }
+
+  volumes {
     host_path      = "${local.pi_docker_volumes_home}/media/tv"
     container_path = "/data/tvshows"
   }
@@ -55,20 +60,31 @@ resource "docker_container" "jellyfin" {
     value = "true"
   }
   labels {
-    label = "traefik.http.routers.jellyfin.rule"
-    value = "Host(`media.home.lan`)"
+    label = "traefik.http.routers.jellyfin-secure.tls"
+    value = "true"
   }
   labels {
-    label = "traefik.http.routers.jellyfin.entrypoints"
-    value = "web"
+    label = "traefik.http.routers.jellyfin-secure.entrypoints"
+    value = "websecure"
   }
   labels {
-    label = "traefik.http.services.jellyfin.loadbalancer.server.scheme"
-    value = "http"
+    label = "traefik.http.routers.jellyfin-secure.tls.certresolver"
+    value = "duckdns"
   }
   labels {
-    label = "traefik.http.services.jellyfin.loadbalancer.server.port"
+    label = "traefik.http.routers.jellyfin-secure.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.jellyfin-secure.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.jellyfin-secure.rule"
+    value = "Host(`media.${var.cert_domain}`)"
+  }
+  labels {
+    label = "traefik.http.services.jellyfin-secure.loadBalancer.server.port"
     value = "8096"
   }
-
 }

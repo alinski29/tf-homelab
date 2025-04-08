@@ -20,13 +20,15 @@ resource "null_resource" "traefik_config_upload" {
   connection {
     type        = "ssh"
     user        = "pi"
-    host        = "192.168.0.250"
+    host        = var.pi_ip_address
     private_key = file("${var.local_home}/.ssh/id_rsa")
   }
 
   provisioner "file" {
     content = templatefile("${path.module}/files/traefik-config.yml.tpl", {
-      letsencrypt_email = var.letsencrypt_email
+      # cloudflare_email = var.cloudflare_email
+      cert_domain   = var.cert_domain
+      pi_ip_address = var.pi_ip_address
     })
     destination = "${var.pi_home}/.config/traefik.yml"
   }
@@ -44,6 +46,14 @@ resource "docker_container" "traefik" {
   networks_advanced {
     name = docker_network.homelab.name
   }
+
+  env = [
+    # "CF_DNS_API_TOKEN=${var.cloudflare_api_token}",
+    "DUCKDNS_TOKEN=${var.duckdns_api_token}",
+    "DUCKDNS_PROPAGATION_TIMEOUT=180",
+    "DUCKDNS_POLLING_INTERVAL=5"
+  ]
+
   ports {
     internal = 80
     external = 80
@@ -53,15 +63,10 @@ resource "docker_container" "traefik" {
     external = 443
   }
   # Optional: Expose Traefik dashboard (secured)
-  # ports {
-  #   internal = 8080
-  #   external = 8090
-  # }
-
-  # host {
-  #   host = "host.docker.internal"
-  #   ip   = "127.0.0.1"
-  # }
+  ports {
+    internal = 8080
+    external = 8090
+  }
 
   volumes {
     host_path      = "/var/run/docker.sock"
@@ -71,7 +76,6 @@ resource "docker_container" "traefik" {
   volumes {
     host_path      = "${var.pi_home}/.config/traefik.yml"
     container_path = "/etc/traefik/traefik.yaml"
-    # read_only      = true
   }
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/traefik/conf/"
@@ -83,25 +87,36 @@ resource "docker_container" "traefik" {
     container_path = "/etc/traefik/certs/"
   }
 
-  # Optional: Expose Traefik dashboard
-  # labels {
-  #   label = "traefik.enable"
-  #   value = "true"
-  # }
-  # labels {
-  #   label = "traefik.http.routers.api.rule"
-  #   value = "Host(`traefik.home.lan`)"
-  # }
-  # labels {
-  #   label = "traefik.http.routers.api.service"
-  #   value = "api@internal"
-  # }
-  # labels {
-  #   label = "traefik.http.routers.api.entrypoints"
-  #   value = "web"
-  # }
-  # labels {
-  #   label = "traefik.http.services.api.loadbalancer.server.port"
-  #   value = "8080"
-  # }
+  labels {
+    label = "traefik.enable"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.traefik.tls"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.traefik.entrypoints"
+    value = "websecure"
+  }
+  labels {
+    label = "traefik.http.routers.traefik.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.traefik.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.traefik.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.traefik.rule"
+    value = "Host(`traefik.${var.cert_domain}`)"
+  }
+  labels {
+    label = "traefik.http.services.traefik.loadbalancer.server.port"
+    value = "8080"
+  }
 }

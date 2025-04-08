@@ -1,24 +1,28 @@
 resource "docker_image" "ollama" {
-  provider     = docker.local
-  name         = data.docker_registry_image.ollama.name
-  force_remove = true
+  provider      = docker.rpi
+  name          = data.docker_registry_image.ollama.name
+  platform      = "arm64"
+  force_remove  = true
+  pull_triggers = [data.docker_registry_image.ollama.sha256_digest]
 }
 
 resource "docker_image" "openwebui" {
-  provider     = docker.local
-  name         = data.docker_registry_image.openwebui.name
-  force_remove = true
+  provider      = docker.rpi
+  name          = data.docker_registry_image.openwebui.name
+  platform      = "arm64"
+  force_remove  = true
+  pull_triggers = [data.docker_registry_image.openwebui.sha256_digest]
 }
 
 resource "docker_network" "openwebui" {
-  provider = docker.local
+  provider = docker.rpi
   name     = "openwebui"
   driver   = "bridge"
 }
 
 resource "docker_container" "ollama" {
-  provider     = docker.local
-  name         = "ollama"
+  provider     = docker.rpi
+  name         = "openwebui-ollama"
   image        = docker_image.ollama.image_id
   restart      = "unless-stopped"
   hostname     = "ollama"
@@ -28,13 +32,13 @@ resource "docker_container" "ollama" {
   }
 
   volumes {
-    host_path      = "${local.local_docker_volumes_home}/ollama"
+    host_path      = "${local.pi_docker_volumes_home}/ollama"
     container_path = "/root/.ollama"
   }
 }
 
 resource "docker_container" "openwebui" {
-  provider = docker.local
+  provider = docker.rpi
   depends_on = [
     docker_container.ollama
   ]
@@ -45,6 +49,9 @@ resource "docker_container" "openwebui" {
   network_mode = "bridge"
   networks_advanced {
     name = docker_network.openwebui.name
+  }
+  networks_advanced {
+    name = docker_network.homelab.name
   }
 
   ports {
@@ -57,7 +64,7 @@ resource "docker_container" "openwebui" {
     container_path = "/var/run/docker.sock"
   }
   volumes {
-    host_path      = "${local.local_docker_volumes_home}/open-webui/app/backend/data"
+    host_path      = "${local.pi_docker_volumes_home}/open-webui/app/backend/data"
     container_path = "/app/backend/data"
   }
 
@@ -69,4 +76,33 @@ resource "docker_container" "openwebui" {
     "ANTHROPIC_API_KEY=${var.anthropic_api_key}",
     "GOOGLE_API_KEY=${var.google_api_key}"
   ]
+
+  labels {
+    label = "traefik.enable"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.tls"
+    value = "true"
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.entrypoints"
+    value = "websecure"
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.tls.certresolver"
+    value = "duckdns"
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.tls.domains[0].main"
+    value = var.cert_domain
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.tls.domains[0].sans"
+    value = "*.${var.cert_domain}"
+  }
+  labels {
+    label = "traefik.http.routers.openwebui.rule"
+    value = "Host(`ai.${var.cert_domain}`)"
+  }
 }
