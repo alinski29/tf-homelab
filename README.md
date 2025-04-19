@@ -4,11 +4,16 @@ This project contains Terraform configurations to deploy various Docker services
 
 ## Services Deployed
 - Syncthing
-- Pi-hole
+- Pihole
 - Jellyfin
 - Qbittorrent
 - Kestra
 - Open WebUI
+- OTEL Collector
+- Prometheus
+- Cadvisor (exports Docker metrics to Prometheus)
+- Loki (like Prometheus but for logs)
+- Grafana
 
 ## Prerequisites
 1. Install [Terraform](https://www.terraform.io/downloads).
@@ -20,8 +25,11 @@ This project contains Terraform configurations to deploy various Docker services
    export TF_VAR_kestra_db_password="<your_kestra_db_password>"
    export TF_VAR_yahoofinance_token="<your_yahoofinance_token>"
    export TF_VAR_openai_api_key="<your_openai_api_key>"
-   export TF_VAR_google_api_key="<your_google_api_key>"
-   export TF_VAR_anthropic_api_key"<your_anthropic_api_key>"
+   export TF_VAR_duckdns_api_token="<your_duckdns_api_token>"
+   export TF_VAR_grafana_admin_password="<your_grafana_admin_password>"
+   export TF_VAR_loki_otel_password="<your_loki_otel_password>"
+   export TF_VAR_prometheus_otel_password="<your_prometheus_otel_password>"
+   export TF_VAR_otel_receiver_password="<your_otel_receiver_password>"
    ```
 
 ## Setup Instructions
