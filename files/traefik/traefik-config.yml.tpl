@@ -41,6 +41,9 @@ entryPoints:
             sans:
               - "*.${cert_domain}"
 
+  syncthing-tcp:
+    address: :22000
+
 certificatesResolvers:
   duckdns:
     acme:

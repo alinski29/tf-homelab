@@ -88,6 +88,10 @@ resource "docker_container" "traefik" {
     internal = 443
     external = 443
   }
+  ports {
+    internal = 22000
+    external = 22000
+  }
   # Optional: Expose Traefik dashboard (secured)
   ports {
     internal = 8080

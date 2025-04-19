@@ -73,16 +73,6 @@ resource "docker_container" "syncthing_pi" {
     "TZ=${var.timezone}"
   ]
 
-  ports {
-    internal = 22000
-    external = 22000
-  }
-  ports {
-    internal = 21027
-    external = 21027
-    protocol = "udp"
-  }
-
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/syncthing/config"
     container_path = "/config"
@@ -128,5 +118,16 @@ resource "docker_container" "syncthing_pi" {
     label = "traefik.http.services.syncthing-pi.loadbalancer.server.port"
     value = "8384"
   }
-
+  labels {
+    label = "traefik.tcp.routers.syncthing-pi-tcp.entrypoints"
+    value = "syncthing-tcp"
+  }
+  labels {
+    label = "traefik.tcp.routers.syncthing-pi-tcp.rule"
+    value = "HostSNI(`*`)"
+  }
+  labels {
+    label = "traefik.tcp.services.syncthing-pi-tcp.loadbalancer.server.port"
+    value = "22000"
+  }
 }
