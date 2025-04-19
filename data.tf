@@ -29,3 +29,30 @@ data "docker_registry_image" "qbittorrent" {
 data "docker_registry_image" "jellyfin" {
   name = "linuxserver/jellyfin"
 }
+
+data "docker_registry_image" "cadvisor" {
+  name = "gcr.io/cadvisor/cadvisor"
+}
+
+data "docker_registry_image" "grafana" {
+  name = "grafana/grafana"
+}
+
+data "docker_registry_image" "prometheus" {
+  name = "prom/prometheus"
+}
+
+data "docker_registry_image" "otelcol" {
+  name = "otel/opentelemetry-collector-contrib"
+}
+
+data "docker_registry_image" "loki" {
+  name = "grafana/loki"
+}
+
+# data "cloudflare_zone" "duckdns" {
+#   zone_id = "81870ecbc3d1e7b5742013d7c836759a"
+#   # filter = {
+#   #   name = "duckdns.org"
+#   # }
+# }

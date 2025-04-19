@@ -28,12 +28,6 @@ variable "local_home" {
   default     = "/home/alinski"
 }
 
-variable "syncthing_image_tag" {
-  description = "Docker tag for the syncthing image"
-  type        = string
-  default     = "latest"
-}
-
 variable "timezone" {
   description = "Timezone for containers."
   type        = string
@@ -86,28 +80,6 @@ variable "openai_api_key" {
   # Provide via environment variable TF_VAR_openai_api_key
 }
 
-variable "openwebui_port" {
-  description = "Port to expose Open WebUI on the host."
-  type        = number
-  default     = 3000
-}
-
-
-variable "anthropic_api_key" {
-  description = "Anthropic API Key for Open WebUI."
-  type        = string
-  sensitive   = true
-  # Provide via environment variable TF_VAR_anthropic_api_key
-}
-
-
-variable "google_api_key" {
-  description = "Google API Key for Open WebUI."
-  type        = string
-  sensitive   = true
-  # Provide via environment variable TF_VAR_google_api_key
-}
-
 # variable "cloudflare_email" {
 #   description = "Email address for Cloudflare API."
 #   type        = string
@@ -127,4 +99,32 @@ variable "duckdns_api_token" {
   type        = string
   sensitive   = true
   # No default, should be provided via environment variable TF_VAR_duckdns_api_token
+}
+
+variable "grafana_admin_password" {
+  description = "Admin password for Grafana."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_grafana_admin_password
+}
+
+variable "loki_otel_password" {
+  description = "Password for Loki OpenTelemetry."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_loki_otel_password
+}
+
+variable "prometheus_otel_password" {
+  description = "Password for Prometheus OpenTelemetry."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_prometheus_otel_password
+}
+
+variable "otel_receiver_password" {
+  description = "Password for OpenTelemetry receiver."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_otel_receiver_password
 }
