@@ -74,10 +74,6 @@ resource "docker_container" "syncthing_pi" {
   ]
 
   ports {
-    internal = 8384
-    external = 8384
-  }
-  ports {
     internal = 22000
     external = 22000
   }
