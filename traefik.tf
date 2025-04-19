@@ -14,7 +14,36 @@ resource "docker_image" "traefik" {
 # Resource to manage the Traefik configuration file upload
 resource "null_resource" "traefik_config_upload" {
   triggers = {
-    template_file = filesha256("${path.module}/files/traefik-config.yml.tpl")
+    template_file = filesha256("${path.module}/files/traefik/traefik-config.yml.tpl")
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "pi"
+    host        = var.pi_ip_address
+    private_key = file("${var.local_home}/.ssh/id_rsa")
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ${var.pi_home}/.config"
+    ]
+  }
+
+  provisioner "file" {
+    content = templatefile("${path.module}/files/traefik/traefik-config.yml.tpl", {
+      # cloudflare_email = var.cloudflare_email
+      cert_domain   = var.cert_domain
+      pi_ip_address = var.pi_ip_address
+    })
+    destination = "${var.pi_home}/.config/traefik.yml"
+  }
+}
+
+resource "null_resource" "traefik_auth_users" {
+  for_each = fileset("${path.module}/files/traefik/", "*-users.txt")
+  triggers = {
+    template_file = filesha256("${path.module}/files/traefik/${each.key}")
   }
 
   connection {
@@ -25,13 +54,10 @@ resource "null_resource" "traefik_config_upload" {
   }
 
   provisioner "file" {
-    content = templatefile("${path.module}/files/traefik-config.yml.tpl", {
-      # cloudflare_email = var.cloudflare_email
-      cert_domain   = var.cert_domain
-      pi_ip_address = var.pi_ip_address
-    })
-    destination = "${var.pi_home}/.config/traefik.yml"
+    source      = "${path.module}/files/traefik/${each.value}"
+    destination = "${local.pi_docker_volumes_home}/traefik/auth/${each.value}"
   }
+
 }
 
 resource "docker_container" "traefik" {
@@ -85,6 +111,14 @@ resource "docker_container" "traefik" {
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/traefik/certs/"
     container_path = "/etc/traefik/certs/"
+  }
+  volumes {
+    host_path      = "${local.pi_docker_volumes_home}/traefik/auth/"
+    container_path = "/etc/traefik/auth/"
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {

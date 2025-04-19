@@ -44,16 +44,6 @@ resource "docker_container" "pihole" {
     external = 67
     protocol = "udp"
   }
-  ports {
-    internal = 80
-    external = 8880
-    protocol = "tcp"
-  }
-  # ports {
-  #   internal = 443
-  #   external = 8443
-  #   protocol = "tcp"
-  # }
 
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/pihole/etc-pihole"
@@ -64,6 +54,10 @@ resource "docker_container" "pihole" {
     host_path      = "${local.pi_docker_volumes_home}/pihole/etc-dnsmasq.d"
     container_path = "/etc/dnsmasq.d"
     read_only      = false
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {

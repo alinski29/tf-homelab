@@ -35,6 +35,10 @@ resource "docker_container" "ollama" {
     host_path      = "${local.pi_docker_volumes_home}/ollama"
     container_path = "/root/.ollama"
   }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
+  }
 }
 
 resource "docker_container" "openwebui" {
@@ -54,11 +58,6 @@ resource "docker_container" "openwebui" {
     name = docker_network.homelab.name
   }
 
-  ports {
-    internal = 8080
-    external = var.openwebui_port
-  }
-
   volumes {
     host_path      = "/var/run/docker.sock"
     container_path = "/var/run/docker.sock"
@@ -68,13 +67,17 @@ resource "docker_container" "openwebui" {
     container_path = "/app/backend/data"
   }
 
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
+  }
+
   env = [
     "ENABLE_OLLAMA_API=true",
     "OLLAMA_BASE_URL=http://${docker_container.ollama.hostname}:11434",
     "ENABLE_OPENAI_API=true",
     "OPENAI_API_KEY=${var.openai_api_key}",
-    "ANTHROPIC_API_KEY=${var.anthropic_api_key}",
-    "GOOGLE_API_KEY=${var.google_api_key}"
+    # "ANTHROPIC_API_KEY=${var.anthropic_api_key}",
+    # "GOOGLE_API_KEY=${var.google_api_key}"
   ]
 
   labels {
@@ -104,5 +107,9 @@ resource "docker_container" "openwebui" {
   labels {
     label = "traefik.http.routers.openwebui.rule"
     value = "Host(`ai.${var.cert_domain}`)"
+  }
+  labels {
+    label = "traefik.http.services.openwebui.loadbalancer.server.port"
+    value = "8080"
   }
 }

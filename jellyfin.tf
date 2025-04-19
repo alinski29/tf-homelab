@@ -16,24 +16,6 @@ resource "docker_container" "jellyfin" {
     name = docker_network.homelab.name
   }
 
-  ports {
-    internal = 8096
-    external = 8096
-  }
-
-  # HTTPS webUI
-  # ports {
-  #   internal = 8920
-  #   external = 8920
-  # }
-
-  # Allow clients to discovery Jellyfin on the local network
-  ports {
-    internal = 7359
-    external = 7359
-    protocol = "udp"
-  }
-
   env = [
     "PUID=${var.puid}",
     "PGID=${var.pgid}",
@@ -53,6 +35,10 @@ resource "docker_container" "jellyfin" {
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/media/movies"
     container_path = "/data/movies"
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {

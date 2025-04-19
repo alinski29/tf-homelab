@@ -91,13 +91,17 @@ resource "docker_container" "kestra_postgres" {
     timeout  = "10s"
     retries  = 10
   }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
+  }
 }
 
 # Resource to manage the Kestra configuration file upload
 resource "null_resource" "kestra_config_upload" {
   # Trigger recreation when the template or password changes
   triggers = {
-    template_file = filesha256("${path.module}/files/kestra-config.yml.tpl")
+    template_file = filesha256("${path.module}/files/kestra/kestra-config.yml.tpl")
     db_password   = var.kestra_db_password
   }
 
@@ -108,8 +112,14 @@ resource "null_resource" "kestra_config_upload" {
     private_key = file("${var.local_home}/.ssh/id_rsa")
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ${var.pi_home}/.config"
+    ]
+  }
+
   provisioner "file" {
-    content = templatefile("${path.module}/files/kestra-config.yml.tpl", {
+    content = templatefile("${path.module}/files/kestra/kestra-config.yml.tpl", {
       db_username = var.kestra_db_username
       db_password = var.kestra_db_password
       db_hostname = "kestra-postgres"
@@ -136,10 +146,6 @@ resource "docker_container" "kestra" {
   networks_advanced {
     name = docker_network.homelab.name # Add homelab network
   }
-  ports {
-    internal = 8080
-    external = 8080
-  }
 
   entrypoint = ["/bin/bash"]
   command    = ["-c", "/app/kestra server standalone --worker-thread=128 -c /etc/config/config.yaml"]
@@ -165,6 +171,10 @@ resource "docker_container" "kestra" {
     host_path      = "${var.pi_home}/.config/kestra-config.yml"
     container_path = "/etc/config/config.yaml"
     read_only      = true
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {
@@ -194,7 +204,6 @@ resource "docker_container" "kestra" {
   labels {
     label = "traefik.http.routers.kestra.rule"
     value = "Host(`kestra.${var.cert_domain}`)"
-    # value = "Host(`kestra.zendata.duckdns.org`) || (Host(`zendata.duckdns.org`) && Path(`/kestra`))"
   }
   labels {
     label = "traefik.http.services.kestra.loadbalancer.server.port"

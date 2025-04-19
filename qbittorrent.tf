@@ -24,10 +24,6 @@ resource "docker_container" "qbittorrent" {
   ]
 
   ports {
-    internal = 9091
-    external = 9091
-  }
-  ports {
     internal = 51413
     external = 51413
     protocol = "tcp"
@@ -37,7 +33,6 @@ resource "docker_container" "qbittorrent" {
     external = 51413
     protocol = "udp"
   }
-
 
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/qbittorrent/config"
@@ -54,6 +49,10 @@ resource "docker_container" "qbittorrent" {
   volumes {
     host_path      = "${local.pi_docker_volumes_home}/media/movies"
     container_path = "/downloads/movies"
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {

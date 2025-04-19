@@ -50,6 +50,10 @@ resource "docker_container" "syncthing_local" {
     host_path      = var.local_home
     container_path = var.local_home
   }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
+  }
 }
 
 resource "docker_container" "syncthing_pi" {
@@ -90,6 +94,10 @@ resource "docker_container" "syncthing_pi" {
   volumes {
     host_path      = var.pi_home
     container_path = var.pi_home
+  }
+
+  log_opts = {
+    tag = "{{.Name}}|{{.ID}}"
   }
 
   labels {
