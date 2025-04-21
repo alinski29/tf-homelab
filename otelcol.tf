@@ -31,7 +31,10 @@ resource "null_resource" "otel_config" {
       loki_auth_header       = "${local.loki_otel_auth_header}",
       prometheus_url         = "https://prometheus.${var.cert_domain}",
       prometheus_auth_header = "${local.prometheus_otel_auth_header}",
-      hostname               = "pi"
+      # tempo_url            = "tempo:3200",
+      tempo_url         = "https://tempo-http.${var.cert_domain}",
+      tempo_auth_header = "${local.tempo_otel_auth_header}",
+      hostname          = "pi"
     })
     destination = "${local.pi_docker_volumes_home}/otel/otel-config.yaml"
   }

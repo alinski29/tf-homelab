@@ -122,6 +122,9 @@ http:
       basicAuth:
         usersFile: /etc/traefik/auth/otel-users.txt
 
+    tempo-auth:
+      basicAuth:
+        usersFile: /etc/traefik/auth/tempo-users.txt
 
   services:
     syncthing-local:

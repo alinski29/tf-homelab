@@ -128,3 +128,10 @@ variable "otel_receiver_password" {
   sensitive   = true
   # No default, should be provided via environment variable TF_VAR_otel_receiver_password
 }
+
+variable "tempo_otel_password" {
+  description = "Password for Tempo OpenTelemetry."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_tempo_otel_password
+}

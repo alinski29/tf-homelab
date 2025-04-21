@@ -101,10 +101,12 @@ exporters:
     tls:
       insecure: true
 
-  # otlphttp/traces:
-  #   endpoint: http://localhost:4418
-  #   tls:
-  #     insecure: true
+  otlphttp/traces:
+    endpoint: ${tempo_url}/otlp
+    headers:
+      Authorization: "${tempo_auth_header}"
+    tls:
+      insecure: true
 
   otlphttp/logs:
     endpoint: ${loki_url}/otlp
@@ -125,11 +127,11 @@ exporters:
 
 service:
   pipelines:
-    # traces:
-    #   receivers: [otlp]
-    #   processors: [batch]
-    #   exporters: [otlphttp/traces]
-    #   #exporters: [otlphttp/traces,debug/traces]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/traces]
+      #exporters: [otlphttp/traces,debug/traces]
     metrics:
       receivers: [otlp, prometheus/collector, hostmetrics]
       processors: [batch]

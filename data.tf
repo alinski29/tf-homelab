@@ -50,6 +50,10 @@ data "docker_registry_image" "loki" {
   name = "grafana/loki"
 }
 
+data "docker_registry_image" "tempo" {
+  name = "grafana/tempo"
+}
+
 # data "cloudflare_zone" "duckdns" {
 #   zone_id = "81870ecbc3d1e7b5742013d7c836759a"
 #   # filter = {

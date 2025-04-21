@@ -13,6 +13,7 @@ This project contains Terraform configurations to deploy various Docker services
 - Prometheus
 - Cadvisor (exports Docker metrics to Prometheus)
 - Loki (like Prometheus but for logs)
+- Tempo (distributed tracing backend)
 - Grafana
 
 ## Prerequisites
