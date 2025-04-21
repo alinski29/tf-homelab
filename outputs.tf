@@ -37,3 +37,23 @@ output "qbittorrent_container_id" {
 output "jellyfin_container_id" {
   value = docker_container.jellyfin.id
 }
+
+output "cadvisor_container_id" {
+  value = docker_container.cadvisor.id
+}
+
+output "grafana_container_id" {
+  value = docker_container.grafana.id
+}
+
+output "loki_container_id" {
+  value = docker_container.loki.id
+}
+
+output "otelcol_container_id" {
+  value = docker_container.otelcol.id
+}
+
+output "prometheus_container_id" {
+  value = docker_container.prometheus.id
+}
