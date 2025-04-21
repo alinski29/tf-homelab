@@ -97,9 +97,7 @@ resource "docker_container" "kestra_postgres" {
   }
 }
 
-# Resource to manage the Kestra configuration file upload
 resource "null_resource" "kestra_config_upload" {
-  # Trigger recreation when the template or password changes
   triggers = {
     template_file = filesha256("${path.module}/files/kestra/kestra-config.yml.tpl")
     db_password   = var.kestra_db_password
@@ -138,13 +136,13 @@ resource "docker_container" "kestra" {
   name         = "kestra"
   image        = docker_image.kestra.image_id
   hostname     = "kestra"
-  network_mode = "bridge" # Removed bridge mode to use specific networks
+  network_mode = "bridge"
   restart      = "unless-stopped"
   networks_advanced {
-    name = docker_network.kestra.name # Keep existing kestra network
+    name = docker_network.kestra.name
   }
   networks_advanced {
-    name = docker_network.homelab.name # Add homelab network
+    name = docker_network.homelab.name
   }
 
   entrypoint = ["/bin/bash"]

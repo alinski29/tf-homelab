@@ -3,7 +3,7 @@ global:
   sendAnonymousUsage: false
 
 log:
-  level: DEBUG
+  level: INFO
 
 accessLog: {}
 
@@ -83,17 +83,13 @@ serversTransport:
 
 http:
   routers:
-  #   openwebui:
-  #     rule: "Host(`ai.${cert_domain}`)"
-  #     service: openwebui
-  #     entryPoints:
-  #       - web
-  #     tls:
-  #       certResolver: duckdns
-  #       domains:
-  #         - main: "${cert_domain}"
-  #           sans:
-  #             - "*.${cert_domain}"
+    syncthing-local:
+      rule: "Host(`syncthing-local.home.lan`)"
+      service: syncthing-local
+      entryPoints:
+        - websecure
+      # Use a self-signed certificate for local access
+      tls: {}
 
     local-redirect:
       entryPoints:
@@ -101,7 +97,7 @@ http:
         - websecure
       # Use HostRegexp with specific subdomains
       # rule: HostRegexp(`{subdomain:(media|kestra)}\.home\.lan`)
-      rule: "Host(`ai.home.lan`) || Host(`traefik.home.lan`) || Host(`media.home.lan`) || Host(`kestra.home.lan`) || Host(`pihole.home.lan`) || Host(`torrents.home.lan`) || Host(`syncthing-pi.home.lan`)"
+      rule: "Host(`ai.home.lan`) || Host(`traefik.home.lan`) || Host(`media.home.lan`) || Host(`kestra.home.lan`) || Host(`pihole.home.lan`) || Host(`torrents.home.lan`) || Host(`syncthing-pi.home.lan`) || Host(`grafana.home.lan`) || Host(`prometheus.home.lan`)"
       middlewares:
         - redirect-home-to-duckdns
       service: noop@internal  # No backend service needed since it's a redirect
@@ -126,11 +122,14 @@ http:
       basicAuth:
         usersFile: /etc/traefik/auth/otel-users.txt
 
-  # services:
-  #   openwebui:
-  #     loadBalancer:
-  #       servers:
-  #         - url: http://192.168.0.29:3000
+
+  services:
+    syncthing-local:
+      loadBalancer:
+        servers:
+          - url: http://192.168.0.29:8384
+        # Uncomment if you want to use the same domain for local access
+        # passTLSClientCert: true
 
 providers:
   docker:
