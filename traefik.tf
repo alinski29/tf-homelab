@@ -34,7 +34,8 @@ resource "null_resource" "traefik_config_upload" {
     content = templatefile("${path.module}/files/traefik/traefik-config.yml.tpl", {
       # cloudflare_email = var.cloudflare_email
       cert_domain   = var.cert_domain
-      pi_ip_address = var.pi_ip_address
+      pi_ip_address = var.pi_ip_address,
+      hostname      = "pi"
     })
     destination = "${var.pi_home}/.config/traefik.yml"
   }

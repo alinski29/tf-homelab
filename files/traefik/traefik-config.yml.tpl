@@ -22,6 +22,18 @@ metrics:
       endpoint: otelcol:4317
       insecure: true
 
+tracing:
+  serviceName: traefik
+  sampleRate: 0.2
+  resourceAttributes:
+    environment: "production"
+    project: "homelab"
+    hostname: ${hostname}
+  otlp:
+    grpc:
+      endpoint: otelcol:4317
+      insecure: true
+
 entryPoints:
   web:
     address: :80
