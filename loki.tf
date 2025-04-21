@@ -32,6 +32,9 @@ resource "null_resource" "loki_config" {
 }
 
 resource "docker_container" "loki" {
+  depends_on = [
+    null_resource.loki_config
+  ]
   provider     = docker.rpi
   name         = "loki"
   image        = docker_image.loki.image_id

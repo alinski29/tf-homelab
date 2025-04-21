@@ -73,6 +73,9 @@ resource "null_resource" "grafana_dashboards" {
 }
 
 resource "docker_container" "grafana" {
+  depends_on = [
+    null_resource.grafana_config
+  ]
   provider     = docker.rpi
   name         = "grafana"
   image        = docker_image.grafana.image_id

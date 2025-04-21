@@ -38,6 +38,9 @@ resource "null_resource" "otel_config" {
 }
 
 resource "docker_container" "otelcol" {
+  depends_on = [
+    null_resource.otel_config
+  ]
   provider     = docker.rpi
   name         = "otelcol"
   image        = docker_image.otelcol.image_id

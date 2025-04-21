@@ -31,6 +31,9 @@ resource "null_resource" "prometheus_config" {
 }
 
 resource "docker_container" "prometheus" {
+  depends_on = [
+    null_resource.prometheus_config
+  ]
   provider     = docker.rpi
   name         = "prometheus"
   image        = docker_image.prometheus.image_id
