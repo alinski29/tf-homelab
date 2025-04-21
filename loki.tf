@@ -1,10 +1,9 @@
-// filepath: /home/alinski/Dev/Personal/tf-homelab/loki.tf
 resource "docker_image" "loki" {
   name          = "grafana/loki"
   provider      = docker.rpi
   platform      = "arm64"
   force_remove  = true
-  pull_triggers = [] # No registry image defined yet
+  pull_triggers = [data.docker_registry_image.loki.sha256_digest]
 }
 
 resource "null_resource" "loki_config" {
