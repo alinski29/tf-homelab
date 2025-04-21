@@ -36,11 +36,6 @@ resource "docker_container" "syncthing_local" {
     internal = 22000
     external = 22000
   }
-  ports {
-    internal = 21027
-    external = 21027
-    protocol = "udp"
-  }
 
   volumes {
     host_path      = "${local.local_docker_volumes_home}/syncthing/config"
