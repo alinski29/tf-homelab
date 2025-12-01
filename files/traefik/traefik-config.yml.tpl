@@ -103,13 +103,24 @@ http:
       # Use a self-signed certificate for local access
       tls: {}
 
+    pgadmin-local:
+      rule: "Host(`pgadmin.home.lan`)"
+      service: pgadmin-local
+      entryPoints:
+        - websecure
+      # Use a self-signed certificate for local access
+      tls: {}
+
+    immich-ml:
+      rule: "Host(`immich-machine-learning`)"
+
     local-redirect:
       entryPoints:
         - web
         - websecure
       # Use HostRegexp with specific subdomains
       # rule: HostRegexp(`{subdomain:(media|kestra)}\.home\.lan`)
-      rule: "Host(`ai.home.lan`) || Host(`traefik.home.lan`) || Host(`media.home.lan`) || Host(`kestra.home.lan`) || Host(`pihole.home.lan`) || Host(`torrents.home.lan`) || Host(`syncthing-pi.home.lan`) || Host(`grafana.home.lan`) || Host(`prometheus.home.lan`)"
+      rule: "Host(`ai.home.lan`) || Host(`traefik.home.lan`) || Host(`media.home.lan`) || Host(`kestra.home.lan`) || Host(`pihole.home.lan`) || Host(`torrents.home.lan`) || Host(`syncthing-pi.home.lan`) || Host(`grafana.home.lan`) || Host(`prometheus.home.lan`) || Host(`pgadmin.home.lan`) || Host(`immich.home.lan`)"
       middlewares:
         - redirect-home-to-duckdns
       service: noop@internal  # No backend service needed since it's a redirect
