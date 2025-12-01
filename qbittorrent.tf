@@ -20,17 +20,17 @@ resource "docker_container" "qbittorrent" {
     "PGID=${var.pgid}",
     "TZ=${var.timezone}",
     "WEBUI_PORT=9091",
-    "TORRENTING_PORT=51413",
+    "TORRENTING_PORT=6881",
   ]
 
   ports {
-    internal = 51413
-    external = 51413
+    internal = 6881
+    external = 6881
     protocol = "tcp"
   }
   ports {
-    internal = 51413
-    external = 51413
+    internal = 6881
+    external = 6881
     protocol = "udp"
   }
 
