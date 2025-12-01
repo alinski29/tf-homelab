@@ -135,3 +135,10 @@ variable "tempo_otel_password" {
   sensitive   = true
   # No default, should be provided via environment variable TF_VAR_tempo_otel_password
 }
+
+variable "immich_postgres_password" {
+  description = "Password for the Immich Postgres database."
+  type        = string
+  sensitive   = true
+  # No default, should be provided via environment variable TF_VAR_immich_db_password
+}
