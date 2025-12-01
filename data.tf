@@ -14,9 +14,9 @@ data "docker_registry_image" "ollama" {
   name = "ollama/ollama"
 }
 
-data "docker_registry_image" "openwebui" {
-  name = "ghcr.io/open-webui/open-webui"
-}
+# data "docker_registry_image" "openwebui" {
+#   name = "ghcr.io/open-webui/open-webui"
+# }
 
 data "docker_registry_image" "traefik" {
   name = "traefik:3.3.5"
@@ -52,6 +52,26 @@ data "docker_registry_image" "loki" {
 
 data "docker_registry_image" "tempo" {
   name = "grafana/tempo"
+}
+
+# data "docker_registry_image" "pgadmin" {
+#   name = "dpage/pgadmin4"
+# }
+
+data "docker_registry_image" "immich" {
+  name = "ghcr.io/immich-app/immich-server:release"
+}
+
+data "docker_registry_image" "immich_postgres" {
+  name = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0"
+}
+
+data "docker_registry_image" "immich_redis" {
+  name = "valkey/valkey:8-bookworm"
+}
+
+data "docker_registry_image" "immich_ml" {
+  name = "ghcr.io/immich-app/immich-machine-learning:release"
 }
 
 # data "cloudflare_zone" "duckdns" {

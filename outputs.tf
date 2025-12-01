@@ -18,13 +18,13 @@ output "kestra_postgres_container_id" {
   value = docker_container.kestra_postgres.id
 }
 
-output "ollama_container_id" {
-  value = docker_container.ollama.id
-}
+# output "ollama_container_id" {
+#   value = docker_container.ollama.id
+# }
 
-output "openwebui_container_id" {
-  value = docker_container.openwebui.id
-}
+# output "openwebui_container_id" {
+#   value = docker_container.openwebui.id
+# }
 
 output "traefik_container_id" {
   value = docker_container.traefik.id
@@ -57,3 +57,7 @@ output "otelcol_container_id" {
 output "prometheus_container_id" {
   value = docker_container.prometheus.id
 }
+
+# output "pgadmin_container_id" {
+#   value = docker_container.pgadmin_local.id
+# }
